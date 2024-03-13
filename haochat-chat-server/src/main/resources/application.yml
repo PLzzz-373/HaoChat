@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    #运行的环境
+    active: test
+  application:
+    name: haochat
+  datasource:
+    url: jdbc:mysql://${chat.mysql.ip}:${haochat.mysql.port}/${haochat.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${haochat.mysql.username}
+    password: ${haochat.mysql.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    # Redis服务器地址
+    host: ${haochat.redis.host}
+    # Redis服务器端口号
+    port: ${haochat.redis.port}
+    # 使用的数据库索引，默认是0
+    database: 0
+    # 连接超时时间
+    timeout: 1800000
+    # 设置密码
+    password: ${haochat.redis.password}
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true

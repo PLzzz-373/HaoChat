@@ -2,16 +2,14 @@ package com.gugugu.haochat.common.user.service;
 
 import com.gugugu.haochat.common.user.domain.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.gugugu.haochat.common.user.domain.vo.resp.UserInfoResp;
 
-/**
- * <p>
- * 用户表 服务类
- * </p>
- *
- * @author <a href="https://github.com/zongzibinbin">abin</a>
- * @since 2024-03-12
- */
+
 public interface UserService{
 
     Long register(User insert);
+
+    UserInfoResp getUserInfo(Long uid);
+
+    void modifyName(Long uid, String name);
 }

@@ -9,6 +9,9 @@ spring:
     username: ${haochat.mysql.username}
     password: ${haochat.mysql.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
   redis:
     # Redis服务器地址
     host: ${haochat.redis.host}

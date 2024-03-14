@@ -51,7 +51,7 @@ public class WxPortalController {
         System.out.println(userInfo);
         wxMsgService.authorize(userInfo);
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("123.207.254.89:8080");
+        redirectView.setUrl("https://b23.tv/NMSMxsu");
         return redirectView;
     }
 

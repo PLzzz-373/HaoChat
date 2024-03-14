@@ -5,7 +5,7 @@ spring:
   application:
     name: haochat
   datasource:
-    url: jdbc:mysql://${chat.mysql.ip}:${haochat.mysql.port}/${haochat.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://${haochat.mysql.ip}:${haochat.mysql.port}/${haochat.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: ${haochat.mysql.username}
     password: ${haochat.mysql.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,3 +23,14 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: true
+wx:
+  mp:
+    #    callback: http://f4cd-113-92-129-127.ngrok.io
+    callback: ${haochat.wx.callback}
+    configs:
+      - appId: ${haochat.wx.appId} # 第一个公众号的appid
+        secret: ${haochat.wx.secret} # 公众号的appsecret
+        token: ${haochat.wx.token} # 接口配置里的Token值
+        aesKey: ${haochat.wx.aesKey} # 接口配置里的EncodingAESKey值
+jwt:
+  secret: ${haochat.jwt.secret}

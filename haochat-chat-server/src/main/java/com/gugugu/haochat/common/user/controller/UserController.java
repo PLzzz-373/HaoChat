@@ -5,6 +5,8 @@ import com.gugugu.haochat.common.domain.dto.RequestInfo;
 import com.gugugu.haochat.common.domain.vo.ApiResult;
 import com.gugugu.haochat.common.interceptor.TokenInterceptor;
 import com.gugugu.haochat.common.user.domain.vo.req.ModifyNameReq;
+import com.gugugu.haochat.common.user.domain.vo.req.WearingBadgeReq;
+import com.gugugu.haochat.common.user.domain.vo.resp.BadgeResp;
 import com.gugugu.haochat.common.user.domain.vo.resp.UserInfoResp;
 import com.gugugu.haochat.common.user.service.UserService;
 import com.gugugu.haochat.common.utils.RequestHolder;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -38,6 +41,19 @@ public class UserController {
         userService.modifyName(RequestHolder.get().getUid(),req.getName());
         return ApiResult.success();
 
+    }
+
+    @GetMapping("/badges")
+    @ApiOperation("可选徽章列表预览")
+    public ApiResult<List<BadgeResp>> badges(){
+        return ApiResult.success(userService.badges(RequestHolder.get().getUid()));
+    }
+
+    @PutMapping("/badge")
+    @ApiOperation("佩戴徽章")
+    public ApiResult<Void> wearingBadge(@Valid @RequestBody WearingBadgeReq wearingBadgeReq){
+        userService.wearingBadge(RequestHolder.get().getUid(), wearingBadgeReq.getItemId());
+        return ApiResult.success();
     }
 
 }

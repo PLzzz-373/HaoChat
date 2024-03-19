@@ -4,9 +4,12 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.gugugu.haochat.common.event.UserOnlineEvent;
 import com.gugugu.haochat.common.user.dao.UserDao;
+import com.gugugu.haochat.common.user.domain.entity.IpInfo;
 import com.gugugu.haochat.common.user.domain.entity.User;
 import com.gugugu.haochat.common.user.service.LoginService;
+import com.gugugu.haochat.common.websocket.NettyUtil;
 import com.gugugu.haochat.common.websocket.domain.dto.WSChannelExtraDTO;
 import com.gugugu.haochat.common.websocket.domain.enums.WSRespTypeEnum;
 import com.gugugu.haochat.common.websocket.domain.vo.response.ws.WSBaseResp;
@@ -18,10 +21,13 @@ import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,6 +40,8 @@ public class WebSocketServiceImpl implements WebSocketService {
     private WxMpService wxMpService;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
     private static final ConcurrentHashMap<Channel,WSChannelExtraDTO> ONLINE_WS_MAP = new ConcurrentHashMap<>();
     public static final Duration DURATION = Duration.ofHours(1);
     public static final int MAXIMUM_SIZE = 1000;
@@ -106,6 +114,9 @@ public class WebSocketServiceImpl implements WebSocketService {
         wsChannelExtraDTO.setUid(user.getId());
         //todo 用户上线成功的事件
         sendMsg(channel,WebSocketAdapter.buildResp(user,token));
+        user.setLastOptTime(new Date());
+        user.refreshIp(NettyUtil.getAttr(channel,NettyUtil.IP));
+        applicationEventPublisher.publishEvent(new UserOnlineEvent(this,user));
     }
 
 

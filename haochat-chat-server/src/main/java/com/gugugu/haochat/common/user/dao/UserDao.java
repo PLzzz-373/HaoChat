@@ -5,6 +5,8 @@ import com.gugugu.haochat.common.user.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class UserDao extends ServiceImpl<UserMapper, User>  {
@@ -35,5 +37,12 @@ public class UserDao extends ServiceImpl<UserMapper, User>  {
                 .eq(User::getId,uid)
                 .set(User::getItemId,itemId)
                 .update();
+    }
+
+    public List<User> getFriendList(List<Long> friendUids) {
+        return lambdaQuery()
+                .in(User::getId, friendUids)
+                .select(User::getId, User::getActiveStatus, User::getName, User::getAvatar)
+                .list();
     }
 }

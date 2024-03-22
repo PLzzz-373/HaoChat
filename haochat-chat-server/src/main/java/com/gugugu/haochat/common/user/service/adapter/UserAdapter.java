@@ -1,12 +1,12 @@
 package com.gugugu.haochat.common.user.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.gugugu.haochat.common.domain.enums.YesOrNoEnum;
+import com.gugugu.haochat.common.common.domain.enums.YesOrNoEnum;
 import com.gugugu.haochat.common.user.domain.entity.ItemConfig;
 import com.gugugu.haochat.common.user.domain.entity.User;
 import com.gugugu.haochat.common.user.domain.entity.UserBackpack;
-import com.gugugu.haochat.common.user.domain.vo.resp.BadgeResp;
-import com.gugugu.haochat.common.user.domain.vo.resp.UserInfoResp;
+import com.gugugu.haochat.common.user.domain.vo.resp.user.BadgeResp;
+import com.gugugu.haochat.common.user.domain.vo.resp.user.UserInfoResp;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 
 import java.util.Comparator;

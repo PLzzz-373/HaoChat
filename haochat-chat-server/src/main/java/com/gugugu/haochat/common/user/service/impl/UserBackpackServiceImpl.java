@@ -1,12 +1,11 @@
 package com.gugugu.haochat.common.user.service.impl;
 
-import com.gugugu.haochat.common.domain.enums.YesOrNoEnum;
+import com.gugugu.haochat.common.common.domain.enums.YesOrNoEnum;
 import com.gugugu.haochat.common.user.dao.UserBackpackDao;
 import com.gugugu.haochat.common.user.domain.entity.UserBackpack;
 import com.gugugu.haochat.common.user.domain.enums.IdempotentEnum;
 import com.gugugu.haochat.common.user.service.IUserBackpackService;
-import com.gugugu.haochat.common.utils.AssertUtil;
-import org.redisson.Redisson;
+import com.gugugu.haochat.common.common.utils.AssertUtil;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;

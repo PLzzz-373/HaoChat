@@ -2,6 +2,7 @@ package com.gugugu.haochat.common;
 
 import com.gugugu.haochat.common.user.dao.UserDao;
 import com.gugugu.haochat.common.user.domain.entity.User;
+import com.gugugu.haochat.common.user.service.LoginService;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
@@ -15,12 +16,20 @@ import javax.xml.ws.Action;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class DaoTest {
+    public static final long UID = 11003L;
     @Autowired
     private WxMpService wxMpService;
+    @Autowired
+    public LoginService loginService;
     @Test
     public void test() throws WxErrorException {
         WxMpQrCodeTicket wxMpQrCodeTicket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(1, 1000);
         String url = wxMpQrCodeTicket.getUrl();
         System.out.println(url);
+    }
+    @Test
+    public void jwt(){
+        String login = loginService.login(UID);
+        System.out.println(login);
     }
 }

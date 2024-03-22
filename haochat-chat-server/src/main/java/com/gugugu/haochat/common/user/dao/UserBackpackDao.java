@@ -1,9 +1,8 @@
 package com.gugugu.haochat.common.user.dao;
 
-import com.gugugu.haochat.common.domain.enums.YesOrNoEnum;
+import com.gugugu.haochat.common.common.domain.enums.YesOrNoEnum;
 import com.gugugu.haochat.common.user.domain.entity.UserBackpack;
 import com.gugugu.haochat.common.user.mapper.UserBackpackMapper;
-import com.gugugu.haochat.common.user.service.IUserBackpackService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +52,12 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
                 .in(UserBackpack::getItemId, collect)
                 .list();
     }
-
+    public List<UserBackpack> getByItemIds(List<Long> uids, List<Long> itemIds) {
+        return lambdaQuery().in(UserBackpack::getUid, uids)
+                .in(UserBackpack::getItemId, itemIds)
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
+                .list();
+    }
     public UserBackpack getByIdempotent(String idempotent) {
         return lambdaQuery()
                 .eq(UserBackpack::getIdempotent, idempotent)

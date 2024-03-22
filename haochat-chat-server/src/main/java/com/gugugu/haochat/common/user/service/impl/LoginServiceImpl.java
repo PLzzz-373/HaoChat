@@ -1,11 +1,9 @@
 package com.gugugu.haochat.common.user.service.impl;
 
-import com.gugugu.haochat.common.constant.RedisKey;
+import com.gugugu.haochat.common.common.constant.RedisKey;
 import com.gugugu.haochat.common.user.service.LoginService;
-import com.gugugu.haochat.common.utils.JwtUtils;
-import com.gugugu.haochat.common.utils.RedisUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.signature.qual.PolySignature;
+import com.gugugu.haochat.common.common.utils.JwtUtils;
+import com.gugugu.haochat.common.common.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

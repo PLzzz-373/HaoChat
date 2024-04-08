@@ -79,6 +79,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
                 //心跳包
                 break;
             case LOGOUT:
+                System.out.println("退出");
                 //退出登录
                 webSocketService.logout(ctx.channel());
                 break;

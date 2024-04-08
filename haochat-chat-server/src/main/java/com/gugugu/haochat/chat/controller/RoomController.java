@@ -17,6 +17,7 @@ import com.gugugu.haochat.common.domain.vo.resp.CursorPageBaseResp;
 import com.gugugu.haochat.common.domain.vo.resp.IdRespVO;
 import com.gugugu.haochat.common.utils.RequestHolder;
 import com.gugugu.haochat.websocket.domain.vo.response.ws.ChatMemberResp;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,9 @@ import java.util.List;
  * @author <a href="https://github.com/PLzzz-373">gugugu</a>
  * @since 2024-03-22
  */
-@Controller
+@RestController
 @RequestMapping("/api/room")
+@Api(tags = "群组相关接口")
 public class RoomController {
     @Autowired
     private RoomAppService roomService;

@@ -16,7 +16,7 @@ public interface WebSocketService {
 
     void authorize(Channel channel, String token);
 
-    void sendToAllOnline(WSBaseResp<WSBlack> resp, Long uid);
+    void sendToAllOnline(WSBaseResp<?> resp, Long uid);
 
     void disconnect(Channel channel);
 
@@ -24,4 +24,5 @@ public interface WebSocketService {
 
     void logout(Channel channel);
 
+    void sendToUid(WSBaseResp<?> wsBaseMsg, Long uid);
 }

@@ -1,5 +1,6 @@
 package com.gugugu.haochat.websocket.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -21,6 +22,7 @@ import com.gugugu.haochat.websocket.service.adapter.WebSocketAdapter;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class WebSocketServiceImpl implements WebSocketService {
     @Autowired
     private LoginService loginService;
@@ -122,7 +125,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     @Override
-    public void sendToAllOnline(WSBaseResp<WSBlack> resp, Long skipUid) {
+    public void sendToAllOnline(WSBaseResp<?> resp, Long skipUid) {
         ONLINE_WS_MAP.forEach(((channel, ext) -> {
             if(Objects.nonNull(skipUid) && Objects.equals(ext.getUid(),skipUid)){
                 return  ;
@@ -170,8 +173,21 @@ public class WebSocketServiceImpl implements WebSocketService {
     @Override
     public void logout(Channel channel) {
         Long uid = NettyUtil.getAttr(channel, NettyUtil.UID);
+        System.out.println(uid);
         offline(channel, uid);
 
+    }
+
+    @Override
+    public void sendToUid(WSBaseResp<?> wsBaseResp, Long uid) {
+        CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uid);
+        if (CollectionUtil.isEmpty(channels)) {
+            log.info("用户：{}不在线", uid);
+            return;
+        }
+        channels.forEach(channel -> {
+            threadPoolTaskExecutor.execute(() -> sendMsg(channel, wsBaseResp));
+        });
     }
 
     private void sendMsgToOne(Channel channel, WSBaseResp<?> wsBaseResp) {
@@ -180,7 +196,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     private void offline(Channel channel, Long uid) {
         ONLINE_UID_MAP.remove(uid);
-        applicationEventPublisher.publishEvent(new UserOfflineEvent(this, uid));
+//        sendMsg(channel,WebSocketAdapter.buildInvalidTokenResp());
+        User user = new User();
+        user.setId(uid);
+        user.setLastOptTime(new Date());
+        applicationEventPublisher.publishEvent(new UserOfflineEvent(this, user));
     }
 
     private void loginSuccess(Channel channel, User user, String token) {

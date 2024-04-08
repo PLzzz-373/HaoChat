@@ -38,6 +38,7 @@ import com.gugugu.haochat.user.domain.entity.User;
 import com.gugugu.haochat.user.domain.enums.ChatActiveStatusEnum;
 import com.gugugu.haochat.user.domain.enums.RoleEnum;
 import com.gugugu.haochat.user.service.IRoleService;
+import com.gugugu.haochat.user.service.cache.UserCache;
 import com.gugugu.haochat.websocket.domain.vo.response.ws.ChatMemberResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,8 @@ public class ChatServiceImpl implements ChatService {
     private UserDao userDao;
     @Autowired
     private RoomGroupDao roomGroupDao;
+    @Autowired
+    private UserCache userCache;
 
     @Override
     public Long sendMsg(ChatMessageReq req, Long uid) {
@@ -95,8 +98,10 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMemberStatisticResp getMemberStatistic() {
-        //todo
-        return null;
+        Long onlineNum = userCache.getOnlineNum();
+        ChatMemberStatisticResp chatMemberStatisticResp = new ChatMemberStatisticResp();
+        chatMemberStatisticResp.setOnlineNum(onlineNum);
+        return chatMemberStatisticResp;
     }
 
     @Override
@@ -117,7 +122,7 @@ public class ChatServiceImpl implements ChatService {
     public void recallMsg(Long uid, ChatMessageBaseReq req) {
         Message message = messageDao.getById(req.getMsgId());
         checkRecall(uid, message);
-
+        //todo 消息撤回
     }
 
     @Override

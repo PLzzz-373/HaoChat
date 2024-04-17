@@ -1,9 +1,8 @@
 package com.gugugu.haochat.chat.controller;
 
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessageBaseReq;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessageMarkReq;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessagePageReq;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessageReq;
+import com.gugugu.haochat.chat.domain.dto.MsgReadInfoDTO;
+import com.gugugu.haochat.chat.domain.vo.req.*;
+import com.gugugu.haochat.chat.domain.vo.resp.ChatMessageReadResp;
 import com.gugugu.haochat.chat.domain.vo.resp.ChatMessageResp;
 import com.gugugu.haochat.chat.service.ChatService;
 import com.gugugu.haochat.common.domain.vo.ApiResult;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +66,26 @@ public class ChatController {
     @ApiOperation("撤回消息")
     public ApiResult<Void> recallMsg(@Valid @RequestBody ChatMessageBaseReq req) {
         chatService.recallMsg(RequestHolder.get().getUid(), req);
+        return ApiResult.success();
+    }
+    @GetMapping("/msg/read/page")
+    @ApiOperation("消息的已读未读列表")
+    public ApiResult<CursorPageBaseResp<ChatMessageReadResp>> getReadPage(@Valid ChatMessageReadReq req){
+        Long uid = RequestHolder.get().getUid();
+        return ApiResult.success(chatService.getReadPage(uid, req));
+    }
+    @GetMapping("/msg/read")
+    @ApiOperation("获取消息的已读未读总数")
+    public ApiResult<Collection<MsgReadInfoDTO>> getReadInfo(@Valid ChatMessageReadInfoReq req){
+        Long uid = RequestHolder.get().getUid();
+        return ApiResult.success(chatService.getMsgReadInfo(uid, req));
+    }
+
+    @PutMapping("/msg/read")
+    @ApiOperation("消息阅读上报")
+    public ApiResult<Void> msgRead(@Valid @RequestBody ChatMessageMemberReq req){
+        Long uid = RequestHolder.get().getUid();
+        chatService.msgRead(uid , req);
         return ApiResult.success();
     }
 }

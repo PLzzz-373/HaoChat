@@ -6,11 +6,15 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Pair;
 import com.gugugu.haochat.chat.dao.*;
+import com.gugugu.haochat.chat.domain.dto.MsgReadInfoDTO;
 import com.gugugu.haochat.chat.domain.entity.*;
 import com.gugugu.haochat.chat.domain.vo.member.MemberReq;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessagePageReq;
+import com.gugugu.haochat.chat.domain.vo.req.*;
+import com.gugugu.haochat.chat.domain.vo.resp.ChatMessageReadResp;
+import com.gugugu.haochat.chat.service.ContactService;
 import com.gugugu.haochat.chat.service.adapter.MemberAdapter;
 import com.gugugu.haochat.chat.service.adapter.MessageAdapter;
+import com.gugugu.haochat.chat.service.adapter.RoomAdapter;
 import com.gugugu.haochat.chat.service.cache.RoomCache;
 import com.gugugu.haochat.chat.service.cache.RoomGroupCache;
 import com.gugugu.haochat.chat.service.helper.ChatMemberHelper;
@@ -19,14 +23,12 @@ import com.gugugu.haochat.chat.service.strategy.msg.MsgHandlerFactory;
 import com.gugugu.haochat.chat.dao.*;
 import com.gugugu.haochat.chat.domain.enums.MessageMarkActTypeEnum;
 import com.gugugu.haochat.chat.domain.enums.MessageTypeEnum;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessageBaseReq;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessageMarkReq;
-import com.gugugu.haochat.chat.domain.vo.req.ChatMessageReq;
 import com.gugugu.haochat.chat.domain.vo.resp.ChatMemberStatisticResp;
 import com.gugugu.haochat.chat.domain.vo.resp.ChatMessageResp;
 import com.gugugu.haochat.chat.service.ChatService;
 import com.gugugu.haochat.chat.service.strategy.mark.AbstractMsgMarkStrategy;
 import com.gugugu.haochat.chat.service.strategy.mark.MsgMarkFactory;
+import com.gugugu.haochat.chat.service.strategy.msg.RecallMsgHandler;
 import com.gugugu.haochat.common.annotation.RedissonLock;
 import com.gugugu.haochat.common.domain.enums.NormalOrNoEnum;
 import com.gugugu.haochat.common.domain.vo.req.CursorPageBaseReq;
@@ -45,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,7 +78,10 @@ public class ChatServiceImpl implements ChatService {
     private RoomGroupDao roomGroupDao;
     @Autowired
     private UserCache userCache;
-
+    @Autowired
+    private RecallMsgHandler recallMsgHandler;
+    @Autowired
+    private ContactService contactService;
     @Override
     public Long sendMsg(ChatMessageReq req, Long uid) {
         check(req, uid);
@@ -122,7 +128,8 @@ public class ChatServiceImpl implements ChatService {
     public void recallMsg(Long uid, ChatMessageBaseReq req) {
         Message message = messageDao.getById(req.getMsgId());
         checkRecall(uid, message);
-        //todo 消息撤回
+        //消息撤回
+        recallMsgHandler.recall(uid, message);
     }
 
     @Override
@@ -167,6 +174,51 @@ public class ChatServiceImpl implements ChatService {
             return CursorPageBaseResp.empty();
         }
         return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(cursorPage.getList(),uid));
+    }
+
+    @Override
+    public CursorPageBaseResp<ChatMessageReadResp> getReadPage(@Nullable Long uid, ChatMessageReadReq req) {
+        Message message = messageDao.getById(req.getMsgId());
+        AssertUtil.isNotEmpty(message,"消息id有误");
+        AssertUtil.equal(uid,message.getFromUid(), "只能查看自己的消息");
+        CursorPageBaseResp<Contact> page;
+        if(req.getSearchType() == 1) {
+            //已读
+            page = contactDao.getReadPage(message, req);
+        }else {
+            page = contactDao.getUnReadPage(message, req);
+        }
+        if(CollectionUtil.isEmpty(page.getList())){
+            return CursorPageBaseResp.empty();
+        }
+        return CursorPageBaseResp.init(page, RoomAdapter.buildReadResp(page.getList()));
+    }
+
+    @Override
+    public Collection<MsgReadInfoDTO> getMsgReadInfo(Long uid, ChatMessageReadInfoReq req) {
+        List<Message> messages = messageDao.listByIds(req.getMsgIds());
+        messages.forEach(message -> {
+            AssertUtil.equal(uid, message.getFromUid(), "只能查询自己发送的消息");
+        });
+        return contactService.getMsgReadInfo(messages).values();
+    }
+
+    @Override
+    @RedissonLock(key = "#uid")
+    public void msgRead(Long uid, ChatMessageMemberReq req) {
+        Contact contact = contactDao.get(uid, req.getRoomId());
+        if (Objects.nonNull(contact)) {
+            Contact update = new Contact();
+            update.setId(contact.getId());
+            update.setReadTime(new Date());
+            contactDao.updateById(update);
+        } else {
+            Contact insert = new Contact();
+            insert.setUid(uid);
+            insert.setRoomId(req.getRoomId());
+            insert.setReadTime(new Date());
+            contactDao.save(insert);
+        }
     }
 
     private Long getLastMsgId(Long roomId, Long uid) {

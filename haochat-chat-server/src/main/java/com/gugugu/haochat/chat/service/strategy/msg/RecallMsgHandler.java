@@ -50,7 +50,7 @@ public class RecallMsgHandler extends AbstractMsgHandler<Object> {
         return "原消息已被撤回";
     }
 
-    public void recall(Long recallUid, Message message) {//todo 消息覆盖问题用版本号解决
+    public void recall(Long recallUid, Message message) {// 消息覆盖问题用版本号解决
         MessageExtra extra = message.getExtra();
         extra.setRecall(new MsgRecall(recallUid, new Date()));
         Message update = new Message();

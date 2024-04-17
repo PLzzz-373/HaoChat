@@ -1,5 +1,11 @@
 package com.gugugu.haochat.chat.service;
 
+import com.gugugu.haochat.chat.domain.dto.MsgReadInfoDTO;
+import com.gugugu.haochat.chat.domain.entity.Message;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 会话列表 服务类
@@ -10,4 +16,5 @@ package com.gugugu.haochat.chat.service;
  */
 public interface ContactService {
 
+    Map<Long, MsgReadInfoDTO> getMsgReadInfo(List<Message> messages);
 }

@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.gugugu.haochat.chat.domain.entity.Contact;
+import com.gugugu.haochat.chat.domain.entity.Message;
+import com.gugugu.haochat.chat.domain.vo.req.ChatMessageReadReq;
 import com.gugugu.haochat.chat.mapper.ContactMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gugugu.haochat.common.domain.vo.req.CursorPageBaseReq;
@@ -57,5 +59,35 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact>  {
             return this.remove(wrapper);
         }
         return false;
+    }
+
+    public CursorPageBaseResp<Contact> getReadPage(Message message, ChatMessageReadReq req) {
+        return CursorUtils.getCursorPageByMysql(this, req, wrapper -> {
+            wrapper.eq(Contact::getRoomId, message.getRoomId());
+            wrapper.ne(Contact::getUid, message.getFromUid());
+            wrapper.ge(Contact::getReadTime, message.getCreateTime());// 已读时间大于等于消息发送时间
+        }, Contact::getReadTime);
+    }
+
+    public CursorPageBaseResp<Contact> getUnReadPage(Message message, ChatMessageReadReq req) {
+        return CursorUtils.getCursorPageByMysql(this, req, wrapper -> {
+            wrapper.eq(Contact::getRoomId, message.getRoomId());
+            wrapper.ne(Contact::getUid, message.getFromUid());
+            wrapper.lt(Contact::getReadTime, message.getCreateTime());// 未读时间小于消息发送时间
+        }, Contact::getReadTime);
+    }
+
+    public Integer getTotalCount(Long roomId) {
+        return lambdaQuery()
+                .eq(Contact::getRoomId, roomId)
+                .count();
+    }
+
+    public Integer getReadCount(Message message) {
+        return lambdaQuery()
+                .eq(Contact::getRoomId, message.getRoomId())
+                .ne(Contact::getUid, message.getFromUid())
+                .ge(Contact::getReadTime, message.getCreateTime())
+                .count();
     }
 }

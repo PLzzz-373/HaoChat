@@ -72,6 +72,9 @@ mybatis-generator-config.xml
 ChannelBizRankClient.java
 ChannelBizBrandWallClient.java
 /*/rebel.xml
-
+# 配置文件
+application-test.properties
 # yml
 *.yml
+
+

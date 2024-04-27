@@ -1,18 +1,18 @@
-package com.gugugu.haochat.chat.domain.entity;
+package com.gugugu.haochat.common.emoji.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("room_group")
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class RoomGroup implements Serializable {
+@TableName("user_emoji")
+public class UserEmoji implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,28 +23,16 @@ public class RoomGroup implements Serializable {
     private Long id;
 
     /**
-     * 房间id
+     * 用户表ID
      */
-    @TableField("room_id")
-    private Long roomId;
+    @TableField("uid")
+    private Long uid;
 
     /**
-     * 群名称
+     * 表情地址a
      */
-    @TableField("name")
-    private String name;
-
-    /**
-     * 群头像
-     */
-    @TableField("avatar")
-    private String avatar;
-
-    /**
-     * 额外信息（根据不同类型房间有不同存储的东西）
-     */
-    @TableField("ext_json")
-    private String extJson;
+    @TableField("expression_url")
+    private String expressionUrl;
 
     /**
      * 逻辑删除(0-正常,1-删除)

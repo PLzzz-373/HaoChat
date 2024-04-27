@@ -60,4 +60,12 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message>  {
                 .set(Message::getStatus,MessageStatusEnum.DELETE.getStatus())
                 .update();
     }
+
+    public Integer getGapCount(Long roomId, Long fromId, Long toId) {
+        return lambdaQuery()
+                .eq(Message::getRoomId, roomId)
+                .gt(Message::getId, fromId)
+                .le(Message::getId, toId)
+                .count();
+    }
 }

@@ -1,5 +1,8 @@
 package com.gugugu.haochat.commo;
 
+import com.gugugu.haochat.common.oss.CosTemplate;
+import com.gugugu.haochat.common.oss.domain.OssReq;
+import com.gugugu.haochat.common.oss.domain.OssResp;
 import com.gugugu.haochat.user.service.LoginService;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -18,6 +21,8 @@ public class DaoTest {
     private WxMpService wxMpService;
     @Autowired
     public LoginService loginService;
+    @Autowired
+    private CosTemplate cosTemplate;
     @Test
     public void test() throws WxErrorException {
         WxMpQrCodeTicket wxMpQrCodeTicket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(1, 1000);
@@ -28,5 +33,15 @@ public class DaoTest {
     public void jwt(){
         String login = loginService.login(UID);
         System.out.println(login);
+    }
+    @Test
+    public void getUploadUrl(){
+        OssReq ossReq = OssReq.builder()
+                .fileName("test.jpeg")
+                .filePath("/test")
+                .autoPath(false)
+                .build();
+        OssResp preSignedObjectUrl = cosTemplate.getPreSignedObjectUrl(ossReq);
+        System.out.println(preSignedObjectUrl);
     }
 }

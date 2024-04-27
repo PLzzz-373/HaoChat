@@ -55,7 +55,7 @@ public class UserDao extends ServiceImpl<UserMapper, User>  {
 
     public Number getOnlineCount(List<Long> memberUidList) {
         return lambdaQuery()
-                .eq(User::getActiveStatus, ChatActiveStatusEnum.OFFLINE.getStatus())
+                .eq(User::getActiveStatus, ChatActiveStatusEnum.ONLINE.getStatus())
                 .in(CollectionUtil.isNotEmpty(memberUidList), User::getId, memberUidList)
                 .count();
     }

@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
@@ -333,6 +334,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
     @Override
+    @Transactional
     public Long addGroup(Long uid, GroupAddReq request) {
         RoomGroup roomGroup = roomService.createGroupRoom(uid);
         // 批量保存群成员

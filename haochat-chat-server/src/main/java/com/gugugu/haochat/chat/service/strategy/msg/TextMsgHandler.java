@@ -14,7 +14,10 @@ import com.gugugu.haochat.common.domain.enums.YesOrNoEnum;
 import com.gugugu.haochat.common.utils.AssertUtil;
 import com.gugugu.haochat.common.utils.dicover.PrioritizedUrlDiscover;
 import com.gugugu.haochat.common.utils.dicover.domain.UrlInfo;
+import com.gugugu.haochat.common.utils.sensitive.domain.SensitiveWord;
+import com.gugugu.haochat.common.utils.sensitive.strategy.SensitiveWordBs;
 import com.gugugu.haochat.user.domain.entity.User;
+import com.gugugu.haochat.user.domain.enums.RoleEnum;
 import com.gugugu.haochat.user.service.cache.UserCache;
 import com.gugugu.haochat.user.service.cache.UserInfoCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,8 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
     private UserCache userCache;
     @Autowired
     private UserInfoCache userInfoCache;
+    @Autowired
+    private SensitiveWordBs sensitiveWordBs;
 
     private static final PrioritizedUrlDiscover URL_TITLE_DISCOVER = new PrioritizedUrlDiscover();
 
@@ -71,13 +76,13 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
         MessageExtra extra = Optional.ofNullable(msg.getExtra()).orElse(new MessageExtra());
         Message update = new Message();
         update.setId(msg.getId());
-        update.setContent(body.getContent());
+        update.setContent(sensitiveWordBs.filter(body.getContent()));
         update.setExtra(extra);
         //如果有回复消息
         if (Objects.nonNull(body.getReplyMsgId())) {
-//            Integer gapCount = messageDao.getGapCount(msg.getRoomId(), body.getReplyMsgId(), msg.getId());
-//            update.setGapCount(gapCount);
-//            update.setReplyMsgId(body.getReplyMsgId());
+            Integer gapCount = messageDao.getGapCount(msg.getRoomId(), body.getReplyMsgId(), msg.getId());
+            update.setGapCount(gapCount);
+            update.setReplyMsgId(body.getReplyMsgId());
 
         }
         //判断消息url跳转

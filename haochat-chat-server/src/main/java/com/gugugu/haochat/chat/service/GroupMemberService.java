@@ -1,6 +1,8 @@
 package com.gugugu.haochat.chat.service;
 
 import com.gugugu.haochat.chat.domain.vo.member.MemberExitReq;
+import com.gugugu.haochat.chat.domain.vo.req.AdminAddReq;
+import com.gugugu.haochat.chat.domain.vo.req.AdminRevokeReq;
 
 /**
  * <p>
@@ -13,4 +15,8 @@ import com.gugugu.haochat.chat.domain.vo.member.MemberExitReq;
 public interface GroupMemberService {
 
     void exitGroup(Long uid, MemberExitReq req);
+
+    void addAdmin(Long uid, AdminAddReq req);
+
+    void revokeAdmin(Long uid, AdminRevokeReq req);
 }

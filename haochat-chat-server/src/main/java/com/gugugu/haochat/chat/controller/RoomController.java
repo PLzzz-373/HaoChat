@@ -5,6 +5,8 @@ import com.gugugu.haochat.chat.domain.vo.member.MemberAddReq;
 import com.gugugu.haochat.chat.domain.vo.member.MemberDelReq;
 import com.gugugu.haochat.chat.domain.vo.member.MemberExitReq;
 import com.gugugu.haochat.chat.domain.vo.member.MemberReq;
+import com.gugugu.haochat.chat.domain.vo.req.AdminAddReq;
+import com.gugugu.haochat.chat.domain.vo.req.AdminRevokeReq;
 import com.gugugu.haochat.chat.domain.vo.req.ChatMessageMemberReq;
 import com.gugugu.haochat.chat.domain.vo.req.GroupAddReq;
 import com.gugugu.haochat.chat.domain.vo.resp.ChatMemberListResp;
@@ -92,6 +94,22 @@ public class RoomController {
     public ApiResult<Void> addMember(@Valid @RequestBody MemberAddReq req) {
         Long uid = RequestHolder.get().getUid();
         roomService.addMember(uid, req);
+        return ApiResult.success();
+    }
+
+    @PutMapping("/group/admin")
+    @ApiOperation("添加管理员")
+    public ApiResult<Boolean> addAdmin(@Valid @RequestBody AdminAddReq req){
+        Long uid = RequestHolder.get().getUid();
+        groupMemberService.addAdmin(uid, req);
+        return ApiResult.success();
+    }
+
+    @DeleteMapping("/group/admin")
+    @ApiOperation("撤销管理员")
+    public ApiResult<Boolean> revokeAdmin(@Valid @RequestBody AdminRevokeReq req){
+        Long uid = RequestHolder.get().getUid();
+        groupMemberService.revokeAdmin(uid, req);
         return ApiResult.success();
     }
 }

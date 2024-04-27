@@ -108,4 +108,30 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
                 .list();
         return list.stream().map(GroupMember::getUid).collect(Collectors.toList());
     }
+
+    public void addAdmin(Long id, List<Long> uidList) {
+        lambdaUpdate()
+                .eq(GroupMember::getGroupId,id)
+                .in(GroupMember::getUid,uidList)
+                .set(GroupMember::getRole, GroupRoleEnum.MANAGER.getType())
+                .update();
+    }
+
+    public List<Long> getManageUidList(Long id) {
+        return lambdaQuery()
+                .eq(GroupMember::getGroupId, id)
+                .eq(GroupMember::getRole, GroupRoleEnum.MANAGER.getType())
+                .list()
+                .stream()
+                .map(GroupMember::getUid)
+                .collect(Collectors.toList());
+    }
+
+    public void revokeAdmin(Long id, List<Long> uidList) {
+        lambdaUpdate()
+                .eq(GroupMember::getGroupId, id)
+                .in(GroupMember::getUid, uidList)
+                .set(GroupMember::getRole, GroupRoleEnum.MEMBER.getType())
+                .update();
+    }
 }

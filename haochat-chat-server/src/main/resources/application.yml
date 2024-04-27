@@ -5,7 +5,7 @@ spring:
   application:
     name: haochat
   datasource:
-    url: jdbc:mysql://${haochat.mysql.ip}:${haochat.mysql.port}/${haochat.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://${haochat.mysql.ip}:${haochat.mysql.port}/${haochat.mysql.db}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
     username: ${haochat.mysql.username}
     password: ${haochat.mysql.password}
     driver-class-name: com.mysql.cj.jdbc.Driver

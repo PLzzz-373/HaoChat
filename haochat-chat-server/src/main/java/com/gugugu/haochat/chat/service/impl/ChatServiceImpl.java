@@ -46,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -83,6 +84,7 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     private ContactService contactService;
     @Override
+    @Transactional
     public Long sendMsg(ChatMessageReq req, Long uid) {
         check(req, uid);
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(req.getMsgType());
@@ -247,6 +249,9 @@ public class ChatServiceImpl implements ChatService {
 
     private void check(ChatMessageReq req, Long uid){
         Room room = roomCache.get(req.getRoomId());
+        if(uid == 1){
+            return;
+        }
         if(room.isHotRoom()){
             return;
         }
